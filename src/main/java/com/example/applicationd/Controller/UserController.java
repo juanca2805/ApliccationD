@@ -17,8 +17,15 @@ public class UserController {
     private UserRepository userRepository;
 
     @GetMapping
-    public List getAllUsers() {
-        return userRepository.findAll();
+    public ResponseEntity<Object> getAllUsers() {
+        List<User> users = userRepository.findAll();
+
+        if (users.isEmpty()) {
+            return ResponseEntity.status(404).body("No hay usuarios");
+        } else {
+
+            return ResponseEntity.ok(users);
+        }
     }
 
     @PostMapping
@@ -27,8 +34,15 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
-        return (User) userRepository.findById(id).orElse(null);
+    public ResponseEntity<Object> getUserById(@PathVariable Long id) {
+        Optional<User> userOptional = userRepository.findById(id);
+
+
+        if (userOptional.isPresent()) {
+            return ResponseEntity.ok(userOptional.get());
+        } else {
+            return ResponseEntity.status(404).body("Usuario no encontrado");
+        }
     }
 
     @DeleteMapping("/{id}")
